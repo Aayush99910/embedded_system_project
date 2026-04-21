@@ -3,7 +3,10 @@ from ultralytics import YOLO
 from picamera2 import Picamera2
 
 # importing the opencv library 
-import cv2 
+import cv2
+
+# importing the time 
+import time
 
 TARGET_CLASSES = {
     "person",
@@ -22,9 +25,12 @@ TARGET_CLASSES = {
 # First I will be taking a picture from the picamera
 def capture_a_frame(picam2) -> Optional[Any]: 
     frame = picam2.capture_array() 
-    
+   
+    # resizing down for faster tlo inference but keep wide FOV
+    # frame = cv2.resize(frame, (640, 480))
+
     # convert the RGBA to RBG (PI camera gives 4 channels) 
-    frame = cv2.cvtColor(frame, cv2.COLOR_RGBA2BGR)
+    # frame = cv2.cvtColor(frame, cv2.COLOR_RGBA2BGR)
 
     # if we have the picture we will return the frame
     if frame is not None: 
@@ -79,22 +85,27 @@ def analyze_frame(frame, model) -> None:
                 print(f"DETECTED: {class_name} — {round(confidence * 100)}% confident")
     
     # show the frame with boxes drawn on it
-    cv2.imshow("Backyard Monitor", frame)
-    cv2.waitKey(0)
-
+    #cv2.imshow("Backyard Monitor", frame)
+    #cv2.waitKey(0)
+    
+    cv2.imwrite("lastcapture.jpg", frame)
+    print("Saved to lastcapture.jpg")
 
 def main() -> None:
+    start = time.time()
+
     model = YOLO("yolov8n.pt") # we are using the yolo v8 nano because they are very lightweight and also fast
     picam2 = Picamera2()# we are connecting to the camera 
 
     # we are setting up the camera configuration.
-    config = picam2.create_preview_configuration(main={"format": "RGB888"})
+    #config = picam2.create_preview_configuration(main={"format": "RGB888", "size": (640, 480)})
+    config = picam2.create_video_configuration(raw={"size": (1640, 1232)}, main={"format": "RGB888", "size": (640, 480)})
+    picam2.configure(config)
     picam2.start() # and here we are turning the camera on and starting to capture the image
 
     # warmup
     # Sleep for 2 seconds  because I was getting black image
-    import time 
-    time.sleep(2)
+    #time.sleep(2)
 
     frame = capture_a_frame(picam2)
     analyze_frame(frame, model)
@@ -102,9 +113,11 @@ def main() -> None:
 
     # after we have captured it we can free the camera
     picam2.stop()
+    end = time.time()
 
+    # total time it took 
+    print(f"Total time that it took: {end - start:.2f} seconds")
 
 
 if __name__ == "__main__":
     main()
-
