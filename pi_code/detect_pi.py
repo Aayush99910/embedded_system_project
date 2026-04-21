@@ -43,7 +43,7 @@ def capture_a_frame(picam2) -> Optional[Any]:
 # now a function to analyze the picture that was taken
 def analyze_frame(frame, model) -> None:
     results = model(frame, verbose=False)
-    print(results)
+    # print(results)
 
     # results give you all the details of the result we can see it in the CLI I have printed it above
     for result in results:
@@ -82,14 +82,15 @@ def analyze_frame(frame, model) -> None:
                 cv2.putText(frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
                 
                 # print statement
-                print(f"DETECTED: {class_name} — {round(confidence * 100)}% confident")
+                # print(f"DETECTED: {class_name} — {round(confidence * 100)}% confident")
     
     # show the frame with boxes drawn on it
     #cv2.imshow("Backyard Monitor", frame)
     #cv2.waitKey(0)
     
+    #cv2.imwrite("lastcapture.jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, 70])
     cv2.imwrite("lastcapture.jpg", frame)
-    print("Saved to lastcapture.jpg")
+    # print("Saved to lastcapture.jpg")
 
 def main() -> None:
     start = time.time()
