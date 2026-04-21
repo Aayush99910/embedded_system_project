@@ -24,7 +24,10 @@ TARGET_CLASSES = {
 
 # First I will be taking a picture from the picamera
 def capture_a_frame(picam2) -> Optional[Any]: 
+    capture_start = time.time()
     frame = picam2.capture_array() 
+    capture_end = time.time()
+    print(f"Capture time: {capture_end - capture_start:.4f} seconds")
    
     # resizing down for faster tlo inference but keep wide FOV
     # frame = cv2.resize(frame, (640, 480))
@@ -42,8 +45,13 @@ def capture_a_frame(picam2) -> Optional[Any]:
 
 # now a function to analyze the picture that was taken
 def analyze_frame(frame, model) -> None:
+    inference_start = time.time()
     results = model(frame, verbose=False)
+    inference_end = time.time()
+    print(f"YOLO inference time: {inference_end - inference_start:.4f} seconds")
     # print(results)
+
+    draw_start = time.time()
 
     # results give you all the details of the result we can see it in the CLI I have printed it above
     for result in results:
@@ -84,25 +92,45 @@ def analyze_frame(frame, model) -> None:
                 # print statement
                 # print(f"DETECTED: {class_name} — {round(confidence * 100)}% confident")
     
+    draw_end = time.time()
+    print(f"Drawing boxes and labels time: {draw_end - draw_start:.4f} seconds")
+
     # show the frame with boxes drawn on it
     #cv2.imshow("Backyard Monitor", frame)
     #cv2.waitKey(0)
     
+    save_start = time.time()
     #cv2.imwrite("lastcapture.jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, 70])
     cv2.imwrite("lastcapture.jpg", frame)
+    save_end = time.time()
+    print(f"Image save time: {save_end - save_start:.4f} seconds")
     # print("Saved to lastcapture.jpg")
 
 def main() -> None:
     start = time.time()
 
+    model_load_start = time.time()
     model = YOLO("yolov8n.pt") # we are using the yolo v8 nano because they are very lightweight and also fast
-    picam2 = Picamera2()# we are connecting to the camera 
+    model_load_end = time.time()
+    print(f"Model load time: {model_load_end - model_load_start:.4f} seconds")
 
+    camera_init_start = time.time()
+    picam2 = Picamera2()# we are connecting to the camera 
+    camera_init_end = time.time()
+    print(f"Camera object creation time: {camera_init_end - camera_init_start:.4f} seconds")
+
+    config_start = time.time()
     # we are setting up the camera configuration.
     #config = picam2.create_preview_configuration(main={"format": "RGB888", "size": (640, 480)})
     config = picam2.create_video_configuration(raw={"size": (1640, 1232)}, main={"format": "RGB888", "size": (640, 480)})
     picam2.configure(config)
+    config_end = time.time()
+    print(f"Camera configuration time: {config_end - config_start:.4f} seconds")
+
+    camera_start_start = time.time()
     picam2.start() # and here we are turning the camera on and starting to capture the image
+    camera_start_end = time.time()
+    print(f"Camera start time: {camera_start_end - camera_start_start:.4f} seconds")
 
     # warmup
     # Sleep for 2 seconds  because I was getting black image
@@ -111,9 +139,12 @@ def main() -> None:
     frame = capture_a_frame(picam2)
     analyze_frame(frame, model)
 
-
+    camera_stop_start = time.time()
     # after we have captured it we can free the camera
     picam2.stop()
+    camera_stop_end = time.time()
+    print(f"Camera stop time: {camera_stop_end - camera_stop_start:.4f} seconds")
+
     end = time.time()
 
     # total time it took 
