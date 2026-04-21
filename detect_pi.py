@@ -1,5 +1,6 @@
 from typing import Any, Optional
 from ultralytics import YOLO
+from picamera2 import Picamera2
 
 # importing the opencv library 
 import cv2 
@@ -18,12 +19,15 @@ TARGET_CLASSES = {
     "giraffe"
 }
 
-# First I will be taking a screenshot from the camera I will be using my webcam for now
-def capture_a_frame(cap) -> Optional[Any]: 
-    ret, frame = cap.read() # grabbing the first frame 
+# First I will be taking a picture from the picamera
+def capture_a_frame(picam2) -> Optional[Any]: 
+    frame = picam2.capture_array() 
+    
+    # convert the RGBA to RBG (PI camera gives 4 channels) 
+    frame = cv2.cvtColor(frame, cv2.COLOR_RGBA2BGR)
 
     # if we have the picture we will return the frame
-    if ret: 
+    if frame is not None: 
         return frame 
     else:
         print("Camera not working!")
@@ -74,29 +78,30 @@ def analyze_frame(frame, model) -> None:
                 # print statement
                 print(f"DETECTED: {class_name} — {round(confidence * 100)}% confident")
     
-    # saving the frame to a picture because the it doesn't show the frame in the window 
-    cv2.imwrite("last_captured.jpg", frame)
-    print("SAVED!")
     # show the frame with boxes drawn on it
-    # cv2.imshow("Backyard Monitor", frame)
-    # cv2.waitKey(0)
+    cv2.imshow("Backyard Monitor", frame)
+    cv2.waitKey(0)
 
 
 def main() -> None:
     model = YOLO("yolov8n.pt") # we are using the yolo v8 nano because they are very lightweight and also fast
-    cap = cv2.VideoCapture(0) # we are connecting to the camera 
+    picam2 = Picamera2()# we are connecting to the camera 
+
+    # we are setting up the camera configuration.
+    config = picam2.create_preview_configuration(main={"format": "RGB888"})
+    picam2.start() # and here we are turning the camera on and starting to capture the image
 
     # warmup
-    # Just throwing away the first 5 images because I was getting black image
-    for i in range(5):
-        cap.read()
+    # Sleep for 2 seconds  because I was getting black image
+    import time 
+    time.sleep(2)
 
-    frame = capture_a_frame(cap)
+    frame = capture_a_frame(picam2)
     analyze_frame(frame, model)
 
 
-    # after we have captured it we can free the webcam 
-    cap.release()
+    # after we have captured it we can free the camera
+    picam2.stop()
 
 
 
