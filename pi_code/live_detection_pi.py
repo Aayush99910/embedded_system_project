@@ -23,7 +23,7 @@ def capture_a_frame(picam2) -> Optional[Any]:
     frame = picam2.capture_array()
     
     # RGB888 format gives 3 channels, just swap R and B for OpenCV
-    frame = cv2.cvtColor(frame, cv2.COLOR_RGBA2BGR)
+    frame = cv2.cvtColor(frame, cv2.COLOR_RGBA2RGB)
 
     if frame is not None:
         return frame

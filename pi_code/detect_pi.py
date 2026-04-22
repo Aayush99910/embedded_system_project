@@ -14,12 +14,15 @@ import threading
 # using queue data strucure so that we can store the last image in the queue and then the analyze thread will take it and analyze
 import queue
 
+<<<<<<< HEAD
 # importing os so that we can create folder for this run
 import os
 
 # importing datetime so that we can save images by date and time
 from datetime import datetime
 
+=======
+>>>>>>> 125869e (doing final tests and works)
 TARGET_CLASSES = {
     "person",
     "bird",
@@ -40,6 +43,7 @@ frame_queue = queue.Queue(maxsize=1)
 # we have a flag that will start as False this is for exit condition
 stop_event = threading.Event()
 
+<<<<<<< HEAD
 # making one folder for this whole run
 RUN_TIMESTAMP = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 RUN_FOLDER = f"detections_{RUN_TIMESTAMP}"
@@ -69,6 +73,8 @@ def log_message(message: str) -> None:
         with open(LOG_FILE, "a") as f:
             f.write(full_message + "\n")
 
+=======
+>>>>>>> 125869e (doing final tests and works)
 
 # First I will be taking a picture from the picamera
 def capture_a_frame(picam2) -> Optional[Any]: 
@@ -91,7 +97,11 @@ def capture_a_frame(picam2) -> Optional[Any]:
 # now a function to analyze the picture that was taken
 def analyze_frame(frame, model) -> None:
     inference_start = time.time()
+<<<<<<< HEAD
     results = model(frame, imgsz=320, verbose=False)
+=======
+    results = model(frame,imgsz=320, verbose=False)
+>>>>>>> 125869e (doing final tests and works)
     inference_end = time.time()
 
     # flag to see if anything is detected or not 
@@ -99,6 +109,9 @@ def analyze_frame(frame, model) -> None:
 
     # storing what classes were detected
     detected_classes = []
+
+    # flag to see if anything is detected or not 
+    detected = False 
 
     draw_start = time.time()
 
@@ -120,7 +133,10 @@ def analyze_frame(frame, model) -> None:
             if class_name in TARGET_CLASSES:
                 # setting the flag to be True 
                 detected = True 
+<<<<<<< HEAD
                 detected_classes.append(f"{class_name} {round(confidence * 100)}%")
+=======
+>>>>>>> 125869e (doing final tests and works)
 
                 # get box coordinates
                 x1, y1, x2, y2 = map(int, box.xyxy[0]) # box.xyxy gives me the four corner of the frame and then map just converts that to integer number
@@ -153,6 +169,7 @@ def analyze_frame(frame, model) -> None:
     
     if detected:
         save_start = time.time()
+<<<<<<< HEAD
         filename = f"detection_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.jpg"
         filepath = os.path.join(RUN_FOLDER, filename)
         #cv2.imwrite("lastcapture.jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, 70])
@@ -164,12 +181,23 @@ def analyze_frame(frame, model) -> None:
         log_message(f"Drawing boxes and labels time: {draw_end - draw_start:.4f} seconds")
         log_message(f"Image save time: {save_end - save_start:.4f} seconds")
         log_message(f"Saved to {filepath}")
+=======
+        filename = f"lastcapture_{int(time.time())}.jpg"
+        #cv2.imwrite("lastcapture.jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, 70])
+        cv2.imwrite(filename, frame)
+        save_end = time.time()
+        print(f"Image save time: {save_end - save_start:.4f} seconds")
+        print(f"Saved to {filename}")
+>>>>>>> 125869e (doing final tests and works)
 
 
 # writing the thread for capture 
 def capture_worker(picam2) -> None:
+<<<<<<< HEAD
     global capture_count
 
+=======
+>>>>>>> 125869e (doing final tests and works)
     # running infintely until stopped
     while not stop_event.is_set():
         capture_start = time.time()
@@ -185,6 +213,7 @@ def capture_worker(picam2) -> None:
                     frame_queue.get_nowait()
                 except queue.Empty:
                     pass 
+<<<<<<< HEAD
 
             # we will put the new picture 
             try:
@@ -198,12 +227,24 @@ def capture_worker(picam2) -> None:
 
         if current_capture_count % 30 == 0:
             log_message(f"Capture time: {capture_end - capture_start:.4f} seconds")
+=======
+            else:
+                # we will put the new picture 
+                try:
+                    frame_queue.put_nowait(frame)
+                except queue.Full:
+                    pass 
+        print(f"Capture time: {capture_end - capture_start:.4f} seconds")
+>>>>>>> 125869e (doing final tests and works)
         
 
 # now writing the analyzer model
 def analyze_worker(model) -> None: 
+<<<<<<< HEAD
     global analyze_count
 
+=======
+>>>>>>> 125869e (doing final tests and works)
     # doing this continously until stopped as well
     while not stop_event.is_set():
         try:
@@ -214,6 +255,7 @@ def analyze_worker(model) -> None:
         analyze_time_start = time.time()
         analyze_frame(frame, model)
         analyze_time_end = time.time()
+<<<<<<< HEAD
 
         with counter_lock:
             analyze_count += 1
@@ -221,6 +263,10 @@ def analyze_worker(model) -> None:
     
         if current_analyze_count % 30 == 0:
             log_message(f"Analyze time (YOLO + draw + save): {analyze_time_end - analyze_time_start:.4f} seconds")
+=======
+    
+    print(f"Analyze time (YOLO + draw + save): {analyze_time_end - analyze_time_start:.4f} seconds")
+>>>>>>> 125869e (doing final tests and works)
     
                 
 
@@ -266,7 +312,11 @@ def main() -> None:
         while True:
             time.sleep(0.1)
     except KeyboardInterrupt:
+<<<<<<< HEAD
         log_message("Stopping Threads...")
+=======
+        print("Stopping Threads...")
+>>>>>>> 125869e (doing final tests and works)
         stop_event.set()
     
     # wait for both threads to fully finish before continuing 
