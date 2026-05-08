@@ -1,0 +1,110 @@
+[2026-05-07 17:27:47] Program started
+[2026-05-07 17:27:47] Run folder created: detections_2026-05-07_17-27-47
+[2026-05-07 17:27:47] Model load time: 0.1728 seconds
+[2026-05-07 17:27:48] Waiting for air sensor to be ready...
+[2026-05-07 17:27:48] Air sensor is ready
+[2026-05-07 17:27:48] Initial Air Quality -> eCO2: 0 ppm, TVOC: 0 ppb
+[2026-05-07 17:27:48] Initial DHT11 -> Temperature: 83.3 F, Humidity: 99 %
+[2026-05-07 17:27:48] Camera object creation time: 0.1225 seconds
+[2026-05-07 17:27:48] Camera configuration time: 0.0061 seconds
+[2026-05-07 17:27:48] Camera start time: 0.0056 seconds
+[2026-05-07 17:27:49] Capture time: 0.0377 seconds
+[2026-05-07 17:27:50] Capture time: 0.0334 seconds
+[2026-05-07 17:27:51] Capture time: 0.0333 seconds
+[2026-05-07 17:27:52] Capture time: 0.0342 seconds
+[2026-05-07 17:27:52] DETECTED: person 90%
+[2026-05-07 17:27:52] Person detected: True
+[2026-05-07 17:27:52] Animal detected: False
+[2026-05-07 17:27:52] Air Quality -> eCO2: 0 ppm, TVOC: 0 ppb
+[2026-05-07 17:27:52] DHT11 -> Temperature: 83.3 F, Humidity: 99 %
+[2026-05-07 17:27:52] YOLO inference time: 0.5785 seconds
+[2026-05-07 17:27:52] Drawing boxes and labels time: 0.0254 seconds
+[2026-05-07 17:27:52] Image save time: 0.0243 seconds
+[2026-05-07 17:27:52] Saved to detections_2026-05-07_17-27-47/detection_2026-05-07_17-27-52.jpg
+[2026-05-07 17:27:53] DETECTED: person 93%
+[2026-05-07 17:27:53] Person detected: True
+[2026-05-07 17:27:53] Animal detected: False
+[2026-05-07 17:27:53] Air Quality -> eCO2: 400 ppm, TVOC: 0 ppb
+[2026-05-07 17:27:53] DHT11 -> Temperature: 77.9 F, Humidity: 77 %
+[2026-05-07 17:27:53] YOLO inference time: 0.1836 seconds
+[2026-05-07 17:27:53] Drawing boxes and labels time: 0.0004 seconds
+[2026-05-07 17:27:53] Image save time: 0.0023 seconds
+[2026-05-07 17:27:53] Saved to detections_2026-05-07_17-27-47/detection_2026-05-07_17-27-53.jpg
+[2026-05-07 17:27:53] Capture time: 0.0340 seconds
+[2026-05-07 17:27:54] DETECTED: person 93%
+[2026-05-07 17:27:54] Person detected: True
+[2026-05-07 17:27:54] Animal detected: False
+[2026-05-07 17:27:54] Air Quality -> eCO2: 400 ppm, TVOC: 0 ppb
+[2026-05-07 17:27:54] DHT11 -> Temperature: 77.9 F, Humidity: 77 %
+[2026-05-07 17:27:54] YOLO inference time: 0.1617 seconds
+[2026-05-07 17:27:54] Drawing boxes and labels time: 0.0003 seconds
+[2026-05-07 17:27:54] Image save time: 0.0023 seconds
+[2026-05-07 17:27:54] Saved to detections_2026-05-07_17-27-47/detection_2026-05-07_17-27-54.jpg
+[2026-05-07 17:27:54] Capture time: 0.0330 seconds
+[2026-05-07 17:27:55] Capture time: 0.0337 seconds
+[2026-05-07 17:27:57] Capture time: 0.0329 seconds
+[2026-05-07 17:27:58] Capture time: 0.0329 seconds
+[2026-05-07 17:27:59] Capture time: 0.0580 seconds
+[2026-05-07 17:28:00] DETECTED: person 88%
+[2026-05-07 17:28:00] Person detected: True
+[2026-05-07 17:28:00] Animal detected: False
+[2026-05-07 17:28:00] Air Quality -> eCO2: 400 ppm, TVOC: 0 ppb
+[2026-05-07 17:28:00] DHT11 -> Temperature: 77.4 F, Humidity: 77 %
+[2026-05-07 17:28:00] YOLO inference time: 0.1600 seconds
+[2026-05-07 17:28:00] Drawing boxes and labels time: 0.0003 seconds
+[2026-05-07 17:28:00] Image save time: 0.0021 seconds
+[2026-05-07 17:28:00] Saved to detections_2026-05-07_17-27-47/detection_2026-05-07_17-28-00.jpg
+[2026-05-07 17:28:00] Analyze time (YOLO + draw + save): 0.6514 seconds
+[2026-05-07 17:28:00] Capture time: 0.0448 seconds
+[2026-05-07 17:28:00] DETECTED: person 95%
+[2026-05-07 17:28:00] Person detected: True
+[2026-05-07 17:28:00] Animal detected: False
+[2026-05-07 17:28:00] Air Quality -> eCO2: 400 ppm, TVOC: 0 ppb
+[2026-05-07 17:28:00] DHT11 -> Temperature: 77.4 F, Humidity: 77 %
+[2026-05-07 17:28:00] YOLO inference time: 0.1698 seconds
+[2026-05-07 17:28:00] Drawing boxes and labels time: 0.0005 seconds
+[2026-05-07 17:28:00] Image save time: 0.0023 seconds
+[2026-05-07 17:28:00] Saved to detections_2026-05-07_17-27-47/detection_2026-05-07_17-28-00.jpg
+[2026-05-07 17:28:01] Capture time: 0.0333 seconds
+[2026-05-07 17:28:01] DETECTED: person 95%
+[2026-05-07 17:28:01] Person detected: True
+[2026-05-07 17:28:01] Animal detected: False
+[2026-05-07 17:28:01] Air Quality -> eCO2: 400 ppm, TVOC: 0 ppb
+[2026-05-07 17:28:01] DHT11 -> Temperature: 77.4 F, Humidity: 77 %
+[2026-05-07 17:28:01] YOLO inference time: 0.1576 seconds
+[2026-05-07 17:28:01] Drawing boxes and labels time: 0.0004 seconds
+[2026-05-07 17:28:01] Image save time: 0.0022 seconds
+[2026-05-07 17:28:01] Saved to detections_2026-05-07_17-27-47/detection_2026-05-07_17-28-01.jpg
+[2026-05-07 17:28:02] Capture time: 0.0333 seconds
+[2026-05-07 17:28:02] DETECTED: person 94%
+[2026-05-07 17:28:02] Person detected: True
+[2026-05-07 17:28:02] Animal detected: False
+[2026-05-07 17:28:02] Air Quality -> eCO2: 400 ppm, TVOC: 0 ppb
+[2026-05-07 17:28:02] DHT11 -> Temperature: 77.4 F, Humidity: 76 %
+[2026-05-07 17:28:02] YOLO inference time: 0.1617 seconds
+[2026-05-07 17:28:02] Drawing boxes and labels time: 0.0003 seconds
+[2026-05-07 17:28:02] Image save time: 0.0022 seconds
+[2026-05-07 17:28:02] Saved to detections_2026-05-07_17-27-47/detection_2026-05-07_17-28-02.jpg
+[2026-05-07 17:28:03] Capture time: 0.0334 seconds
+[2026-05-07 17:28:03] DETECTED: person 63%
+[2026-05-07 17:28:03] Person detected: True
+[2026-05-07 17:28:03] Animal detected: False
+[2026-05-07 17:28:03] Air Quality -> eCO2: 400 ppm, TVOC: 0 ppb
+[2026-05-07 17:28:03] DHT11 -> Temperature: 77.4 F, Humidity: 76 %
+[2026-05-07 17:28:03] YOLO inference time: 0.1588 seconds
+[2026-05-07 17:28:03] Drawing boxes and labels time: 0.0003 seconds
+[2026-05-07 17:28:03] Image save time: 0.0022 seconds
+[2026-05-07 17:28:03] Saved to detections_2026-05-07_17-27-47/detection_2026-05-07_17-28-03.jpg
+[2026-05-07 17:28:04] Capture time: 0.0362 seconds
+[2026-05-07 17:28:05] Capture time: 0.0345 seconds
+[2026-05-07 17:28:06] Capture time: 0.0305 seconds
+[2026-05-07 17:28:07] Capture time: 0.0300 seconds
+[2026-05-07 17:28:08] Analyze time (YOLO + draw + save): 0.4568 seconds
+[2026-05-07 17:28:08] Capture time: 0.0353 seconds
+[2026-05-07 17:28:10] Capture time: 0.0354 seconds
+[2026-05-07 17:28:11] Capture time: 0.0351 seconds
+[2026-05-07 17:28:12] Capture time: 0.0314 seconds
+[2026-05-07 17:28:13] Capture time: 0.0337 seconds
+[2026-05-07 17:28:14] Analyze time (YOLO + draw + save): 0.1610 seconds
+[2026-05-07 17:28:14] Capture time: 0.0544 seconds
+[2026-05-07 17:28:14] Stopping Threads...
