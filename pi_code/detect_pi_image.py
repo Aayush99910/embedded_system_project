@@ -84,10 +84,22 @@ CONFIDENCE_LIMIT = 0.60
 #   640 -> best accuracy, slowest — only if Pi can keep up
 IMGSZ = 416
 
+# this controls the actual camera image size that gets saved
+# higher = better saved image quality but more CPU/RAM
+# this is a better balance than 640x480
+CAMERA_WIDTH = 960
+CAMERA_HEIGHT = 720
+
+# this controls the smaller frame size used only for YOLO inference
+# YOLO runs on this smaller frame so speed stays good
+# the original larger frame is still saved for better image quality
+YOLO_FRAME_WIDTH = 640
+YOLO_FRAME_HEIGHT = 480
+
 # jpeg quality for saved detection images
 # higher = better image quality but larger file size
 # 95 is near-lossless, 80 is a good balance, default opencv is around 75
-JPEG_QUALITY = 95
+JPEG_QUALITY = 90
 
 # queue size tradeoff:
 # 1 = always analyze the freshest frame, drops stale ones (best for real-time)
@@ -220,10 +232,20 @@ def capture_a_frame(picam2) -> Optional[Any]:
 def analyze_frame(frame, model, ccs, dht_device, buzzer) -> None:
     inference_start = time.time()
 
+    # keeping the original frame high quality so saved images look better
+    original_frame = frame.copy()
+
+    # resizing only for YOLO so inference stays fast
+    yolo_frame = cv2.resize(frame, (YOLO_FRAME_WIDTH, YOLO_FRAME_HEIGHT))
+
     # using the IMGSZ constant defined at the top — change that value to tune accuracy vs speed
-    results = model(frame, imgsz=IMGSZ, verbose=False)
+    results = model(yolo_frame, imgsz=IMGSZ, verbose=False)
 
     inference_end = time.time()
+
+    # calculate the scale so boxes from the smaller YOLO frame match the larger saved image
+    scale_x = original_frame.shape[1] / YOLO_FRAME_WIDTH
+    scale_y = original_frame.shape[0] / YOLO_FRAME_HEIGHT
 
     # flag to see if anything is detected or not
     detected = False
@@ -256,15 +278,21 @@ def analyze_frame(frame, model, ccs, dht_device, buzzer) -> None:
                 # get box coordinates
                 x1, y1, x2, y2 = map(int, box.xyxy[0])
 
+                # scale box coordinates back to the original high quality frame
+                x1 = int(x1 * scale_x)
+                y1 = int(y1 * scale_y)
+                x2 = int(x2 * scale_x)
+                y2 = int(y2 * scale_y)
+
                 # draw the box
-                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                cv2.rectangle(original_frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
                 # draw the label
                 label = f"{display_name} {round(confidence * 100)}%"
 
                 # write that text into the frame
                 cv2.putText(
-                    frame,
+                    original_frame,
                     label,
                     (x1, y1 - 10),
                     cv2.FONT_HERSHEY_SIMPLEX,
@@ -292,7 +320,7 @@ def analyze_frame(frame, model, ccs, dht_device, buzzer) -> None:
 
     # writing air quality values on the image - top left
     cv2.putText(
-        frame,
+        original_frame,
         air_text_1,
         (10, 30),
         cv2.FONT_HERSHEY_SIMPLEX,
@@ -302,7 +330,7 @@ def analyze_frame(frame, model, ccs, dht_device, buzzer) -> None:
     )
 
     cv2.putText(
-        frame,
+        original_frame,
         air_text_2,
         (10, 60),
         cv2.FONT_HERSHEY_SIMPLEX,
@@ -313,9 +341,9 @@ def analyze_frame(frame, model, ccs, dht_device, buzzer) -> None:
 
     # writing date and time at the bottom left
     cv2.putText(
-        frame,
+        original_frame,
         current_time_text,
-        (10, 470),
+        (10, original_frame.shape[0] - 10),
         cv2.FONT_HERSHEY_SIMPLEX,
         0.6,
         (255, 255, 0),
@@ -328,7 +356,7 @@ def analyze_frame(frame, model, ccs, dht_device, buzzer) -> None:
     thickness = 2
     margin = 5
 
-    frame_height, frame_width = frame.shape[:2]
+    frame_height, frame_width = original_frame.shape[:2]
 
     (temp_width, temp_height), _ = cv2.getTextSize(dht_text_1, font, font_scale, thickness)
     (hum_width, hum_height), _ = cv2.getTextSize(dht_text_2, font, font_scale, thickness)
@@ -340,7 +368,7 @@ def analyze_frame(frame, model, ccs, dht_device, buzzer) -> None:
     hum_y = frame_height - margin
 
     cv2.putText(
-        frame,
+        original_frame,
         dht_text_1,
         (temp_x, temp_y),
         font,
@@ -350,7 +378,7 @@ def analyze_frame(frame, model, ccs, dht_device, buzzer) -> None:
     )
 
     cv2.putText(
-        frame,
+        original_frame,
         dht_text_2,
         (hum_x, hum_y),
         font,
@@ -375,7 +403,7 @@ def analyze_frame(frame, model, ccs, dht_device, buzzer) -> None:
 
         # using JPEG_QUALITY constant so saved images are not blurry or compressed
         # change JPEG_QUALITY at the top of the file to tune file size vs image quality
-        cv2.imwrite(filepath, frame, [cv2.IMWRITE_JPEG_QUALITY, JPEG_QUALITY])
+        cv2.imwrite(filepath, original_frame, [cv2.IMWRITE_JPEG_QUALITY, JPEG_QUALITY])
 
         save_end = time.time()
 
@@ -453,6 +481,8 @@ def main() -> None:
     log_message("Program started (IMAGE mode — no live window, saves JPEGs on detection only)")
     log_message(f"Run folder created: {RUN_FOLDER}")
     log_message(f"YOLO imgsz set to: {IMGSZ} — change IMGSZ at the top of the file to tune accuracy vs speed")
+    log_message(f"Camera image size set to: {CAMERA_WIDTH}x{CAMERA_HEIGHT} — change CAMERA_WIDTH and CAMERA_HEIGHT at the top of the file to tune saved image quality vs speed")
+    log_message(f"YOLO frame size set to: {YOLO_FRAME_WIDTH}x{YOLO_FRAME_HEIGHT} — change YOLO_FRAME_WIDTH and YOLO_FRAME_HEIGHT at the top of the file to tune inference speed")
     log_message(f"JPEG quality set to: {JPEG_QUALITY} — change JPEG_QUALITY at the top of the file to tune image quality vs file size")
 
     model_load_start = time.time()
@@ -494,7 +524,7 @@ def main() -> None:
     # setting up the camera configuration
     config = picam2.create_video_configuration(
         raw={"size": (1640, 1232)},
-        main={"format": "RGB888", "size": (640, 480)},
+        main={"format": "RGB888", "size": (CAMERA_WIDTH, CAMERA_HEIGHT)},
         buffer_count=1,
         queue=False
     )
