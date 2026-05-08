@@ -84,6 +84,11 @@ CONFIDENCE_LIMIT = 0.60
 #   640 -> best accuracy, slowest — only if Pi can keep up
 IMGSZ = 416
 
+# jpeg quality for saved detection images
+# higher = better image quality but larger file size
+# 95 is near-lossless, 80 is a good balance, default opencv is around 75
+JPEG_QUALITY = 95
+
 # queue size tradeoff:
 # 1 = always analyze the freshest frame, drops stale ones (best for real-time)
 # 3 = small buffer so brief detections are not dropped, still close to real-time
@@ -368,7 +373,9 @@ def analyze_frame(frame, model, ccs, dht_device, buzzer) -> None:
         filename = f"detection_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.jpg"
         filepath = os.path.join(RUN_FOLDER, filename)
 
-        cv2.imwrite(filepath, frame)
+        # using JPEG_QUALITY constant so saved images are not blurry or compressed
+        # change JPEG_QUALITY at the top of the file to tune file size vs image quality
+        cv2.imwrite(filepath, frame, [cv2.IMWRITE_JPEG_QUALITY, JPEG_QUALITY])
 
         save_end = time.time()
 
@@ -446,6 +453,7 @@ def main() -> None:
     log_message("Program started (IMAGE mode — no live window, saves JPEGs on detection only)")
     log_message(f"Run folder created: {RUN_FOLDER}")
     log_message(f"YOLO imgsz set to: {IMGSZ} — change IMGSZ at the top of the file to tune accuracy vs speed")
+    log_message(f"JPEG quality set to: {JPEG_QUALITY} — change JPEG_QUALITY at the top of the file to tune image quality vs file size")
 
     model_load_start = time.time()
 

@@ -75,8 +75,28 @@ DISPLAY_CLASSES = {
 # only accept detections if YOLO is sure enough
 CONFIDENCE_LIMIT = 0.60
 
+# imgsz controls the resolution YOLO resizes the frame to before running inference
+# higher = better detection accuracy but slower, lower = faster but may miss things
+# try these values and see what works best on the Pi:
+#   320 -> fastest, may miss small or distant objects
+#   416 -> good middle ground, a bit slower
+#   480 -> better accuracy, noticeably slower
+#   640 -> best accuracy, slowest — only if Pi can keep up
+IMGSZ = 416
+
+# queue size tradeoff:
+# 1 = always analyze the freshest frame, drops stale ones (best for real-time)
+# 3 = small buffer so brief detections are not dropped, still close to real-time
+# 4-5 = larger buffer, analyze every frame but may lag behind if YOLO is slow
+QUEUE_SIZE = 3
+
+# jpeg quality for saved detection images
+# higher = better image quality but larger file size
+# 95 is near-lossless, 80 is a good balance, default opencv is around 75
+JPEG_QUALITY = 95
+
 # we will make a queue
-frame_queue = queue.Queue(maxsize=1)
+frame_queue = queue.Queue(maxsize=QUEUE_SIZE)
 
 # we have a flag that will start as False this is for exit condition
 stop_event = threading.Event()
@@ -200,8 +220,8 @@ def capture_a_frame(picam2) -> Optional[Any]:
 def analyze_frame(frame, model, ccs, dht_device, buzzer) -> None:
     inference_start = time.time()
 
-    # better balance between speed and accuracy
-    results = model(frame, imgsz=416, verbose=False)
+    # using the IMGSZ constant defined at the top — change that value to tune accuracy vs speed
+    results = model(frame, imgsz=IMGSZ, verbose=False)
 
     inference_end = time.time()
 
@@ -356,7 +376,9 @@ def analyze_frame(frame, model, ccs, dht_device, buzzer) -> None:
         filename = f"detection_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.jpg"
         filepath = os.path.join(RUN_FOLDER, filename)
 
-        cv2.imwrite(filepath, frame)
+        # using JPEG_QUALITY constant so saved images are not blurry or compressed
+        # change JPEG_QUALITY at the top of the file to tune file size vs image quality
+        cv2.imwrite(filepath, frame, [cv2.IMWRITE_JPEG_QUALITY, JPEG_QUALITY])
 
         save_end = time.time()
 
@@ -381,13 +403,15 @@ def capture_worker(picam2) -> None:
         frame = capture_a_frame(picam2)
         capture_end = time.time()
 
-        # this is if the queue is full then we will replace that with the new image that we captured
+        # this is if the queue is full then we will drain it and replace with the new image that we captured
+        # draining instead of removing just one makes sure the newest frame always gets in
         if frame is not None:
             if frame_queue.full():
-                try:
-                    frame_queue.get_nowait()
-                except queue.Empty:
-                    pass
+                while not frame_queue.empty():
+                    try:
+                        frame_queue.get_nowait()
+                    except queue.Empty:
+                        break
 
             # we will put the new picture
             try:
@@ -431,6 +455,8 @@ def main() -> None:
 
     log_message("Program started")
     log_message(f"Run folder created: {RUN_FOLDER}")
+    log_message(f"YOLO imgsz set to: {IMGSZ} — change IMGSZ at the top of the file to tune accuracy vs speed")
+    log_message(f"JPEG quality set to: {JPEG_QUALITY} — change JPEG_QUALITY at the top of the file to tune image quality vs file size")
 
     model_load_start = time.time()
 
